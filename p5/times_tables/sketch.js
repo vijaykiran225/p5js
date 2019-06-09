@@ -2,12 +2,14 @@ var radius = 100;
 var parts = 10;
 var eachPartAngle = 0;
 var slider;
-var multiplierAmount = 20;
+var multiplierSlider;
+var multiplierAmount = 2;
 
 function setup() {
     // put setup code here
     createCanvas(400, 400);
     slider = createSlider(1, 500, 1);
+    multiplierSlider=createSlider(1, 500, 1);
 }
 
 function draw() {
@@ -15,6 +17,7 @@ function draw() {
     clear();
     // background(0);
     parts = slider.value();
+    multiplierAmount=multiplierSlider.value();
     textSize(10);
     // fill(255);
     text("Current Value is " + parts, 10, 10);
