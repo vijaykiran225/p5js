@@ -1,6 +1,6 @@
 function setup() {
     // put setup code here
-    createCanvas(360, 360);
+    createCanvas(400, 400);
     pixelDensity(1);
     // background(0);
 }
@@ -8,40 +8,43 @@ function setup() {
 function mandelbrot(zn, cn) {
     // body...
     var squareReal = (zn.real * zn.real) - (zn.imag * zn.imag);
-    var squareImag = 2 * zn.real * zn.imag;
+    var squareImag = 2.0 * zn.real * zn.imag;
     return result = {
         real: squareReal + cn.real,
         imag: squareImag + cn.imag
     };
 }
 
+var theta = 0;
 function draw() {
     // put drawing code here
     loadPixels();
     for (var i = 0; i <= width; i++) {
         for (var j = 0; j <= height; j++) {
-            var z = {
-                real: 0,
-                imag: 0
-            };
             var c = {
-                real: map(i, 0, width, -3.5, 3.5),
-                imag: map(j, 0, height, -3.5, 3.5)
+                real:  -0.832,
+                imag: 0.156
+            };
+            var z = {
+                real: map(i, 0, width, -2, 2),
+                imag: map(j, 0, height, -1.5, 1.5)
             };
             var countForValue = 0;
-            var exceeded = false;
-            while (countForValue < 100) {
+            var exploded = false;
+            while (countForValue < 50) {
                 var zNext = mandelbrot(z, c);
-                if (zNext.real >= 4) {
-                    exceeded = true;
+                if (zNext.real >= 16) {
+                    exploded = true;
                     break;
                 }
-                z=zNext;
+                z = zNext;
                 countForValue++;
             }
-            var bright = map(countForValue,0,100,0,255);
-            if (!exceeded) {
-                bright = 200;
+            var bright = map(countForValue, 0, 100, 0, 1);
+            if (exploded) {
+                bright = 0;
+            } else {
+                bright = map(sqrt(bright), 0, 1, 0, 255);
             }
             var id = 4 * ((j * width) + (i));
             pixels[id] = bright;
@@ -51,5 +54,7 @@ function draw() {
         }
     }
     updatePixels();
-    noLoop();
+    // noLoop();
+
+    theta += 0.2;
 }
