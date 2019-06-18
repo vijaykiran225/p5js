@@ -14,25 +14,22 @@ function setup() {
 
 function draw() {
     // put drawing code here
-    var totalHits=0;
+    var totalHits = 0;
     for (var i = 0; i < lightningBolts.length; i++) {
-        stroke(228, 0, 255,200);
+        stroke(228, 0, 255, 200);
         fill(255);
         strokeWeight(4);
         point(lightningBolts[i].x, lightningBolts[i].y);
-   
         var randomVector = p5.Vector.random2D();
-        var variation=random(1,3);
+        var variation = random(1, 3);
         randomVector.x = random(-variation, variation);
         randomVector.y = constrain(randomVector.y, 0, 500);
         lightningBolts[i].add(randomVector);
-
-        if(lightningBolts[i].y >= height){
+        if (lightningBolts[i].y >= height) {
             totalHits++;
         }
     }
-
-    if(totalHits== maxBolts){
+    if (totalHits == maxBolts) {
         console.log("finished");
         noLoop();
     }
