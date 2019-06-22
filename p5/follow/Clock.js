@@ -17,23 +17,20 @@ class Clock {
         this.minute = constrain(this.minute, 0, 59);
         this.second = constrain(this.second, 0, 59);
     }
-    showNumbers(n, length) {
+    showNumbers(n, length, target, col) {
         push();
         translate(width / 2, height / 2);
         textSize(15);
+        noStroke();
         for (var i = 0; i < n; i++) {
             let someAngle = radians(((360 / n) * i) - 90);
             let locX = length * cos(someAngle);
             let locY = length * sin(someAngle);
             textAlign(CENTER);
-            let target = this.minute
-            if (n == 12) {
-                target = this.hour;
-            }
             if (i == target) {
-                fill(255, 255, 0);
+                fill(col);
             } else {
-                fill(0, 0, 0, 100);
+                fill(0, 0, 0, 150);
             }
             text(i, locX, locY);
         }
@@ -73,8 +70,9 @@ class Clock {
         pop();
     }
     displayClock() {
-        this.showNumbers(12, 120);
-        this.showNumbers(60, 240);
+        this.showNumbers(12, 120, this.hour, color(255, 255, 0));
+        this.showNumbers(60, 200, this.minute, color(0, 255, 255));
+        this.showNumbers(60, 240, this.second, color(255, 0, 255));
         this.showHands(this.hourDisp, radians(this.hourAngle), color(255, 255, 0));
         this.showHands(this.minDisp, radians(this.minAngle), color(0, 255, 255));
         this.showHands(this.secDisp, radians(this.secAngle), color(255, 0, 255));
@@ -85,6 +83,6 @@ class Clock {
         let time = this.hour + " : " + this.minute + " : " + this.second;
         textSize(32);
         textAlign(CENTER);
-        text(time, width / 2, height);
+        text(time, width / 2, height - 5);
     }
 }
