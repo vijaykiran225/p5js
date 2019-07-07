@@ -52,8 +52,8 @@ function draw() {
         i = i - cut;
     }
 
-    let f = pow(2, ((i % 88) - 49) / 12) * 440;
-    osc.freq(f);
+    // let f = pow(2, ((i % 88) - 49) / 12) * 440;
+    osc.freq(i);
 
     if (mouseIsPressed) {
         osc.stop();
