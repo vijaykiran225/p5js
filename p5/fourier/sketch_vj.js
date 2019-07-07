@@ -1,36 +1,29 @@
  let font;
- // let img;
- function preload() {
-     font = loadFont('Knul-Regular.otf');
-     // img = loadImage('chandler.png');
- }
+ const FOURIER_DRAW = 0;
+ const USER_DRAW = 1;
  let fourierX = [];
  let fourierY = [];
+ let angle = 0;
+ let wave = [];
+ let buttonToggle;
+
+ let action = USER_DRAW;
+
+ let img;
+
+ function preload() {
+     //  font = loadFont('Knul-Regular.otf');
+     img = loadImage('thanos.png');
+ }
 
  function setup() {
      // put setup code here
-     createCanvas(800, 400);
+     createCanvas(800, 600);
      background(0);
-     let points = font.textToPoints("Vijay", 0, 0, 100);
-     // let points = [];
-     // for (var i = 0; i < 100; i++) {
-     //     let ang = map(i, 0, 100, 0, 360);
-     //     let point = {
-     //         x: 75 * cos(ang),
-     //         y: 75 * sin(ang)
-     //     }
-     //     points.push(point);
-     // }
-     print(points);
-     fourierX = dft(points, true);
-     fourierY = dft(points, false);
-     print(fourierX);
-     print(fourierY);
-     fourierX.sort((a, b) => b.amp - a.amp);
-     fourierY.sort((a, b) => b.amp - a.amp);
+     buttonToggle = createButton("toggle");
+     buttonToggle.mousePressed(toggle);
+
  }
- let angle = 0;
- let wave = [];
 
  function drawEpiCircles(x, y, rotation, arr) {
      // body...
@@ -60,7 +53,75 @@
      return createVector(x, y);
  }
 
+ function normalize(arr) {
+     let normalizedValue = [];
+     for (let index = 0; index < arr.length; index++) {
+         const element = arr[index];
+         element.x = map(element.x, 0, width, 0, 400);
+         element.y = map(element.y, 0, height, 0, 400);
+         normalizedValue.push(element);
+     }
+     return normalizedValue;
+ }
+
+ function do_calc() {
+     //  let points = font.textToPoints("Vijay", 0, 0, 100);
+     //  // let points = [];
+     //  // for (var i = 0; i < 100; i++) {
+     //  //     let ang = map(i, 0, 100, 0, 360);
+     //  //     let point = {
+     //  //         x: 75 * cos(ang),
+     //  //         y: 75 * sin(ang)
+     //  //     }
+     //  //     points.push(point);
+     //  // }
+
+     points = normalize(mousePath);
+
+     print(points);
+     fourierX = dft(points, true);
+     fourierY = dft(points, false);
+     print(fourierX);
+     print(fourierY);
+     fourierX.sort((a, b) => b.amp - a.amp);
+     fourierY.sort((a, b) => b.amp - a.amp);
+ }
+
+ let mousePath = [];
+
+ function mouseDragged() {
+     let mouseLoc = {
+         x: mouseX,
+         y: mouseY
+     };
+     mousePath.push(mouseLoc);
+
+ }
+
  function draw() {
+     if (action == USER_DRAW) {
+         path_draw();
+     } else {
+
+         epicy_draw();
+     }
+ }
+
+
+ function path_draw() {
+     stroke(255);
+     background(0);
+     noFill();
+     beginShape();
+     for (let index = 0; index < mousePath.length; index++) {
+         const element = mousePath[index];
+         vertex(element.x, element.y);
+     }
+     endShape();
+
+ }
+
+ function epicy_draw() {
      // put drawing code here
      background(0);
      let vx = drawEpiCircles(300, 50, 0, fourierX);
@@ -76,14 +137,11 @@
          vertex(wave[i].x, wave[i].y);
      }
      endShape();
-     if (mouseIsPressed) {
-         noLoop();
-     }
      let dt = (TWO_PI) / (fourierY.length);
      if (angle + dt >= TWO_PI) {
          angle = 0;
          wave = [];
-         noLoop();
+
      }
      angle += dt;
  }
@@ -105,4 +163,22 @@
          noLoop();
      }
      angle += 0.03;
+ }
+
+
+ function toggle() {
+     if (action == USER_DRAW) {
+         action = FOURIER_DRAW;
+         wave = [];
+         fourierX = [];
+         angle = 0;
+         fourierY = [];
+         do_calc();
+     } else if (action == FOURIER_DRAW) {
+         action = USER_DRAW;
+         mousePath = [];
+     }
+     background(0);
+
+
  }
