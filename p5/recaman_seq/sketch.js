@@ -17,7 +17,7 @@ function setup() {
     osc = new p5.Oscillator();
     osc.setType('sine');
     osc.amp(0.5);
-    osc.phase(0.3);
+    // osc.phase(0.3);
     osc.start();
 
 
@@ -52,7 +52,7 @@ function draw() {
         i = i - cut;
     }
 
-    let f = pow(2, (i % 108 - 49) / 12) * 440;
+    let f = pow(2, ((i % 88) - 49) / 12) * 440;
     osc.freq(f);
 
     if (mouseIsPressed) {
