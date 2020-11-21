@@ -38,6 +38,12 @@ class Game {
                     currentlyChoosenCell.getFile());
 
                 this.timer.press();
+
+                if (isCheckMate(this.grid)) {
+                    console.log("check mate");
+                } else if (isCheck(this.grid)) {
+                    console.log("check");
+                }
             }
             this.previouslySelectedCell.highlighted = false;
             this.previouslySelectedCell = undefined;

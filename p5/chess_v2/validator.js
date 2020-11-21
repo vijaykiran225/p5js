@@ -26,16 +26,7 @@ function getPossibleMoveFromThisCell(aCell, aGrid) {
             moves.push(...diagonal(curRank, curFile));
 
         } else if (piece.getName() === "king") {
-
-            for (let i = -1; i <= 1; i++) {
-                for (let j = -1; j <= 1; j++) {
-                    moves.push({
-                        rank: curRank + i,
-                        file: curFile + j
-                    });
-
-                }
-            }
+            moves.push(...kingSurround(curRank, curFile));
 
             moves.push(...checkForCastle(aGrid, curRank, curFile, piece));
 
@@ -80,8 +71,28 @@ function getPossibleMoveFromThisCell(aCell, aGrid) {
     return [];
 }
 
+function kingSurround(curRank, curFile) {
+    let m = [];
+    for (let i = -1; i <= 1; i++) {
+        for (let j = -1; j <= 1; j++) {
+            m.push({
+                rank: curRank + i,
+                file: curFile + j
+            });
+
+        }
+    }
+    return m;
+}
+
 function rankToInt(rank) {
     return (rank.charCodeAt(0) - "A".charCodeAt(0));
+}
+
+function intToRank(value) {
+    let ranks = ["A", "B", "C", "D", "E", "F", "G", "H"];
+
+    return ranks[value];
 }
 
 function horizontal(curRank) {
@@ -189,7 +200,94 @@ function checkForCastle(aGrid, curRank, curFile, aPiece) {
 
 }
 
-function isCheck(params) {
+function isCheckMate(params) {
 
     return false;
+}
+function isCheck(aGrid) {
+
+    let aCell = aGrid["D"][0]; // test
+    let spots = [];
+
+    let curRank = rankToInt(aCell.getRank());
+    let curFile = aCell.getFile() - 1;
+
+    spots = horizontal(curRank);
+    for (let i = 0; i < spots.length; i++) {
+        const spot = spots[i];
+        let gridRank = intToRank(spot.rank);
+        let gridFile = spot.file;
+
+        if (aGrid[gridRank] && aGrid[gridRank][gridFile] && aGrid[gridRank][gridFile].getPiece()
+            && aGrid[gridRank][gridFile].getPiece().getColour() !== aCell.getPiece().getColour()
+            && (aGrid[gridRank][gridFile].getPiece().getName() === "queen"
+                || aGrid[gridRank][gridFile].getPiece().getName() === "rook")) {
+
+            return true;
+
+        }
+    }
+    spots = vertical(curFile);
+    for (let i = 0; i < spots.length; i++) {
+        const spot = spots[i];
+        let gridRank = intToRank(spot.rank);
+        let gridFile = spot.file;
+
+        if (aGrid[gridRank] && aGrid[gridRank][gridFile] && aGrid[gridRank][gridFile].getPiece()
+            && aGrid[gridRank][gridFile].getPiece().getColour() !== aCell.getPiece().getColour()
+            && (aGrid[gridRank][gridFile].getPiece().getName() === "queen"
+                || aGrid[gridRank][gridFile].getPiece().getName() === "rook")) {
+
+            return true;
+
+        }
+    }
+    spots = diagonal(curRank, curFile);
+    for (let i = 0; i < spots.length; i++) {
+        const spot = spots[i];
+        let gridRank = intToRank(spot.rank);
+        let gridFile = spot.file;
+
+        // console.table(spot)
+        if (aGrid[gridRank] && aGrid[gridRank][gridFile] && aGrid[gridRank][gridFile].getPiece()
+            && aGrid[gridRank][gridFile].getPiece().getColour() !== aCell.getPiece().getColour()
+            && (aGrid[gridRank][gridFile].getPiece().getName() === "queen"
+                || aGrid[gridRank][gridFile].getPiece().getName() === "bishop")) {
+
+            return true;
+
+        }
+    }
+    spots = knights(curRank, curFile);
+    for (let i = 0; i < spots.length; i++) {
+        const spot = spots[i];
+        let gridRank = intToRank(spot.rank);
+        let gridFile = spot.file;
+
+        if (aGrid[gridRank] && aGrid[gridRank][gridFile] && aGrid[gridRank][gridFile].getPiece()
+            && aGrid[gridRank][gridFile].getPiece().getColour() !== aCell.getPiece().getColour()
+            && (aGrid[gridRank][gridFile].getPiece().getName() === "knight")) {
+
+            return true;
+
+        }
+    }
+
+    spots = kingSurround(curRank, curFile);
+    for (let i = 0; i < spots.length; i++) {
+        const spot = spots[i];
+        let gridRank = intToRank(spot.rank);
+        let gridFile = spot.file;
+
+        if (aGrid[gridRank] && aGrid[gridRank][gridFile] && aGrid[gridRank][gridFile].getPiece()
+            && aGrid[gridRank][gridFile].getPiece().getColour() !== aCell.getPiece().getColour()
+            && (aGrid[gridRank][gridFile].getPiece().getName() === "pawn")) {
+
+            return true;
+
+        }
+    }
+
+    return false;
+
 }
