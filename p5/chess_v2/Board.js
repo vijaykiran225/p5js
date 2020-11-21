@@ -14,6 +14,7 @@ class Game {
         this.timer = undefined;
         this.previouslySelectedCell = undefined;
 
+        this.toMark = [];
 
     }
 
@@ -24,10 +25,12 @@ class Game {
 
         let currentlyChoosenCell = this.grid[this.ranks[rankX]][fileY];
 
+
+
         if (this.previouslySelectedCell) {
 
             if (this.previouslySelectedCell.getPiece()
-                && this.isValid(currentlyChoosenCell, this.previouslySelectedCell)) {
+                && validateMove(this.previouslySelectedCell, currentlyChoosenCell, this.grid)) {
                 this.movePiece(
                     this.previouslySelectedCell.getRank(),
                     this.previouslySelectedCell.getFile(),
@@ -38,9 +41,28 @@ class Game {
             }
             this.previouslySelectedCell.highlighted = false;
             this.previouslySelectedCell = undefined;
+
+
+            this.toMark.forEach(element => {
+                let r = this.ranks[element.rank];
+                if (this.grid[r] && this.grid[r][element.file]) {
+                    this.grid[r][element.file].highlighted = false;
+                }
+            });
+            this.toMark = [];
         } else if (currentlyChoosenCell.getPiece()) {
 
             currentlyChoosenCell.highlighted = true;
+
+
+            this.toMark = getPossibleMoveFromThisCell(currentlyChoosenCell, this.grid);
+
+            this.toMark.forEach(element => {
+                let r = this.ranks[element.rank];
+                if (this.grid[r] && this.grid[r][element.file]) {
+                    this.grid[r][element.file].highlighted = true;
+                }
+            });
             this.previouslySelectedCell = currentlyChoosenCell;
         }
 
@@ -103,7 +125,7 @@ class Game {
     }
 
     initTimer(mins) {
-        this.timer = new Timer(0.1, this.getBoardSize());
+        this.timer = new Timer(mins, this.getBoardSize());
     }
 
     startTimer() {
@@ -172,11 +194,4 @@ class Game {
 
     }
 
-    isValid(src, dest) {
-        if (src.getRank() === dest.getRank() && src.getFile() === dest.getFile()) {
-            return false;
-        }
-
-        return true;
-    }
 }
