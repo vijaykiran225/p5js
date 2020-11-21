@@ -1,31 +1,36 @@
 const res = 100;
 
 
-let board;
+let game;
 
 
 function setup() {
-    board = new ChessBoard(res);
-    createCanvas(board.getBoardSize(), board.getBoardSize());
+    game = new Game(res);
+    createCanvas(game.getBoardSize(), game.getBoardSize());
     background(121);
 
-    board.initBoard();
+    game.initBoard();
+    game.initTimer(3);
+    game.placeInitialPieces();
+    game.drawBoard();
 
-    board.placeInitialPieces();
-    board.drawBoard();
+
 }
 
 function mousePressed() {
 
-    // board.movePiece("F", 7, "F", 5);
+    let x = mouseX;
+    let y = mouseY;
+    if (x > game.getBoardSize() || y > game.getBoardSize()) {
 
-    board.selectCell(mouseX, mouseY);
-    board.drawBoard();
+    } else {
+        game.selectCell(mouseX, mouseY);
+    }
+    game.drawBoard();
 }
 
 // function draw() {
 //     board.drawBoard();
-
 // }
 
 

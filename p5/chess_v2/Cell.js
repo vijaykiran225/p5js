@@ -3,7 +3,7 @@ class Cell {
     constructor(r, f) {
         this.rank = r;
         this.file = f;
-        this.piece = null;
+        this.piece = undefined;
         this.highlighted = false;
     }
 
@@ -13,7 +13,7 @@ class Cell {
 
     removePiece() {
         let deletedPiece = this.piece;
-        this.piece = null;
+        this.piece = undefined;
         return deletedPiece;
     }
 

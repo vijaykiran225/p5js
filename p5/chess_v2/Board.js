@@ -1,4 +1,4 @@
-class ChessBoard {
+class Game {
 
 
     constructor(r) {
@@ -10,9 +10,11 @@ class ChessBoard {
 
         this.pieces = [1, 2, 3, 4, 5, 6, 7, 8];
         this.ranks = ["A", "B", "C", "D", "E", "F", "G", "H"]
-        this.showPosition = false;
-
+        this.showPosition = true;
+        this.timer = undefined;
         this.previouslySelectedCell = undefined;
+
+
     }
 
     selectCell(x, y) {
@@ -24,12 +26,15 @@ class ChessBoard {
 
         if (this.previouslySelectedCell) {
 
-            if (this.previouslySelectedCell.getPiece()) {
+            if (this.previouslySelectedCell.getPiece()
+                && this.isValid(currentlyChoosenCell, this.previouslySelectedCell)) {
                 this.movePiece(
                     this.previouslySelectedCell.getRank(),
                     this.previouslySelectedCell.getFile(),
                     currentlyChoosenCell.getRank(),
                     currentlyChoosenCell.getFile());
+
+                this.timer.press();
             }
             this.previouslySelectedCell.highlighted = false;
             this.previouslySelectedCell = undefined;
@@ -44,34 +49,34 @@ class ChessBoard {
     placeInitialPieces() {
 
         // this.testPiece();
-        this.placePiece("black", "D", 8, "King");
-        this.placePiece("white", "D", 1, "King");
+        this.placePiece("black", "D", 8, "♚", "king");
+        this.placePiece("white", "D", 1, "♔", "king");
 
-        this.placePiece("black", "E", 8, "Queen");
-        this.placePiece("white", "E", 1, "Queen");
+        this.placePiece("black", "E", 8, "♛", "queen");
+        this.placePiece("white", "E", 1, "♕", "queen");
 
-        this.placePiece("black", "G", 8, "Knight");
-        this.placePiece("white", "G", 1, "Knight");
+        this.placePiece("black", "G", 8, "♞", "knight");
+        this.placePiece("white", "G", 1, "♘", "knight");
 
-        this.placePiece("black", "H", 8, "Rook");
-        this.placePiece("white", "H", 1, "Rook");
+        this.placePiece("black", "H", 8, "♜", "rook");
+        this.placePiece("white", "H", 1, "♖", "rook");
 
-        this.placePiece("black", "C", 8, "Bishop");
-        this.placePiece("white", "C", 1, "Bishop");
+        this.placePiece("black", "C", 8, "♝", "bishop");
+        this.placePiece("white", "C", 1, "♗", "bishop");
 
-        this.placePiece("black", "F", 8, "Bishop");
-        this.placePiece("white", "F", 1, "Bishop");
+        this.placePiece("black", "F", 8, "♝", "bishop");
+        this.placePiece("white", "F", 1, "♗", "bishop");
 
-        this.placePiece("black", "B", 8, "Knight");
-        this.placePiece("white", "B", 1, "Knight");
+        this.placePiece("black", "B", 8, "♞", "knight");
+        this.placePiece("white", "B", 1, "♘", "knight");
 
-        this.placePiece("black", "A", 8, "Rook");
-        this.placePiece("white", "A", 1, "Rook");
+        this.placePiece("black", "A", 8, "♜", "rook");
+        this.placePiece("white", "A", 1, "♖", "rook");
 
         for (let i = 0; i < 8; i++) {
 
-            this.placePiece("black", this.ranks[i], 7, "Pawn");
-            this.placePiece("white", this.ranks[i], 2, "Pawn");
+            this.placePiece("black", this.ranks[i], 7, "♟", "pawn");
+            this.placePiece("white", this.ranks[i], 2, "♙", "pawn");
 
         }
 
@@ -97,6 +102,17 @@ class ChessBoard {
         }
     }
 
+    initTimer(mins) {
+        this.timer = new Timer(0.1, this.getBoardSize());
+    }
+
+    startTimer() {
+        this.timer.start();
+    }
+
+    stopTimer() {
+        this.timer.stop();
+    }
     drawBoard() {
 
         let counter = 1;
@@ -107,6 +123,7 @@ class ChessBoard {
                 let y = j * this.res;
 
                 fill(counter % 2 == 0 ? 155 : 185);
+                // noFill();
                 if (this.grid[this.ranks[i]][j].highlighted) {
                     fill(200, 10, 100);
                 }
@@ -118,7 +135,8 @@ class ChessBoard {
                     noFill();
                     textAlign(CENTER);
                     stroke(125, 10, 100);
-                    text(this.grid[this.ranks[i]][j].showPos(), x + (this.res / 2), y + (this.res / 2));
+                    textSize(10);
+                    text(this.grid[this.ranks[i]][j].showPos(), x + (this.res / 10), y + (this.res / 10));
                 }
                 if (this.grid[this.ranks[i]][j].getPiece()) {
                     textAlign(CENTER);
@@ -131,15 +149,16 @@ class ChessBoard {
                         stroke(255);
                         // stroke(255, 255, 10);
                     }
-                    text(this.grid[this.ranks[i]][j].getPiece().getName(), x + (this.res / 2), y + (this.res / 2) + 30);
+                    textSize(64);
+                    text(this.grid[this.ranks[i]][j].getPiece().getSuit(), x + (this.res / 2), y + (this.res / 2) + 30);
                 }
             }
             counter++;
         }
     }
 
-    placePiece(col, rank, file, name) {
-        let somePiece = new Piece(name, col);
+    placePiece(col, rank, file, suit, name) {
+        let somePiece = new Piece(suit, col, name);
 
         this.grid[rank][file - 1].placePiece(somePiece);
 
@@ -153,4 +172,11 @@ class ChessBoard {
 
     }
 
+    isValid(src, dest) {
+        if (src.getRank() === dest.getRank() && src.getFile() === dest.getFile()) {
+            return false;
+        }
+
+        return true;
+    }
 }
